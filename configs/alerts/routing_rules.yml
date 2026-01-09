@@ -1,0 +1,71 @@
+# Alert Routing Configuration
+
+# Routing rules for different criticality levels and alert types
+routing_rules:
+  
+  # P1 Alerts - Critical, page immediately
+  p1:
+    destinations:
+      - pagerduty
+      - slack
+    channels:
+      slack: "#data-alerts-critical"
+    quiet_hours: false
+    require_acknowledgment: true
+  
+  # P2 Alerts - Important, notify team
+  p2:
+    destinations:
+      - slack
+    channels:
+      slack: "#data-quality-alerts"
+    quiet_hours:
+      enabled: true
+      start_hour: 22  # 10 PM
+      end_hour: 7     # 7 AM
+      timezone: "UTC"
+  
+  # P3 Alerts - Low priority, dashboard only
+  p3:
+    destinations:
+      - dashboard
+    quiet_hours: false
+
+# Alert Suppression Rules
+suppression:
+  
+  # Don't alert during known maintenance windows
+  maintenance_windows:
+    - name: "Weekly ETL Refresh"
+      day_of_week: 0  # Sunday
+      start_hour: 2
+      duration_hours: 4
+      suppress_datasets: ["financial_transactions", "user_events"]
+  
+  # Suppress repeated alerts
+  deduplication:
+    enabled: true
+    window_minutes: 60
+    same_alert_threshold: 3  # Max 3 of same alert type per hour
+
+# Trend-based Alert Filtering
+trend_filtering:
+  enabled: true
+  lookback_hours: 24
+  failure_rate_threshold: 0.3  # 30%
+  consecutive_failures_threshold: 3
+
+# Escalation Rules
+escalation:
+  enabled: true
+  
+  # Escalate to P1 if P2 alert is not acknowledged
+  p2_to_p1:
+    enabled: true
+    wait_minutes: 60
+  
+  # Escalate if failure persists
+  persistent_failure:
+    enabled: true
+    consecutive_runs: 5
+    escalate_to: p1

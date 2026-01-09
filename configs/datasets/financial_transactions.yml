@@ -1,0 +1,60 @@
+# Example Dataset Configuration: Financial Transactions
+
+dataset:
+  name: financial_transactions
+  description: "Core financial transaction table with customer payment data"
+  criticality: p1  # P1 = page on failure, P2 = slack, P3 = dashboard only
+  
+  source:
+    type: postgresql
+    connection: prod_warehouse
+    table: fact_transactions
+  
+  freshness:
+    warning_threshold: 1h
+    failure_threshold: 4h
+    timestamp_column: created_at
+  
+  volume:
+    expected_min_rows_per_run: 50000
+    expected_max_rows_per_run: 500000
+    anomaly_detection: true
+    anomaly_threshold_std: 3.0
+  
+  columns:
+    - name: transaction_id
+      tests: [unique, not_null]
+    
+    - name: user_id
+      tests: [not_null, referential_integrity]
+      references: dim_users.id
+    
+    - name: amount
+      tests: [not_null, positive]
+      valid_range: [0.01, 1000000]
+    
+    - name: currency
+      tests: [not_null]
+      valid_values: ["USD", "EUR", "GBP", "CAD"]
+    
+    - name: transaction_type
+      tests: [not_null]
+      valid_values: ["purchase", "refund", "transfer", "withdrawal"]
+    
+    - name: status
+      tests: [not_null]
+      valid_values: ["pending", "completed", "failed", "cancelled"]
+    
+    - name: created_at
+      tests: [not_null]
+    
+    - name: email
+      tests: []
+      regex_pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+  
+  custom_tests:
+    - transaction_balance_check
+  
+  scheduling:
+    schedule_interval: "0 */6 * * *"  # Every 6 hours
+    depends_on: []

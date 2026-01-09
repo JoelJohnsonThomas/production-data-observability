@@ -1,0 +1,58 @@
+# Example Dataset Configuration: User Events
+
+dataset:
+  name: user_events
+  description: "User activity events from web and mobile applications"
+  criticality: p2  # P2 = Slack alerts
+  
+  source:
+    type: postgresql
+    connection: prod_warehouse
+    table: user_events
+  
+  freshness:
+    warning_threshold: 30m
+    failure_threshold: 2h
+    timestamp_column: event_timestamp
+  
+  volume:
+    expected_min_rows_per_run: 100000
+    expected_max_rows_per_run: 2000000
+    anomaly_detection: true
+    anomaly_threshold_std: 2.5
+  
+  columns:
+    - name: event_id
+      tests: [unique, not_null]
+    
+    - name: user_id
+      tests: [not_null]
+    
+    - name: event_type
+      tests: [not_null]
+      valid_values: 
+        - "page_view"
+        - "click"
+        - "form_submit"
+        - "purchase"
+        - "sign_up"
+        - "sign_in"
+        - "sign_out"
+    
+    - name: platform
+      tests: [not_null]
+      valid_values: ["web", "ios", "android"]
+    
+    - name: session_id
+      tests: [not_null]
+    
+    - name: event_timestamp
+      tests: [not_null]
+    
+    - name: properties
+      tests: []
+      # JSON column - would need custom validation
+  
+  scheduling:
+    schedule_interval: "0 */4 * * *"  # Every 4 hours
+    depends_on: []

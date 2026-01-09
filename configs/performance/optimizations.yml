@@ -1,0 +1,69 @@
+# Performance Optimization Configuration
+
+execution:
+  # Sampling configuration
+  default_sample_size: 1000000
+  use_query_caching: true
+  timeout_minutes: 30
+  
+  # Parallel execution
+  max_parallel_validations: 5
+  enable_async_execution: true
+
+routing:
+  # Force specific test types to use SQL engine
+  force_sql_execution:
+    - referential_integrity
+    - multi_column_uniqueness
+    - cross_table_validation
+    - complex_aggregate
+  
+  # Skip expensive tests for large tables
+  skip_for_tables_larger_than_gb: 100
+  skip_tests:
+    - value_distribution
+    - exact_cardinality
+    - full_table_scan_operations
+  
+  # Use direct checks for these operations
+  prefer_direct_checks:
+    - freshness
+    - volume
+    - row_count
+    - table_exists
+
+# Profiling optimization
+profiling:
+  enable_advanced_profiling: true
+  auto_profile_new_columns: true
+  profile_sample_size: 50000
+  
+  # Column type inference
+  infer_data_types: true
+  detect_patterns: true
+  
+  # Skip profiling for these column types
+  skip_column_types:
+    - text  # Large text fields
+    - json
+    - binary
+
+# Caching configuration
+caching:
+  enable_result_caching: true
+  cache_ttl_minutes: 60
+  cache_backend: "redis"  # redis, memory, or database
+  
+  # Cache validation results for these test types
+  cacheable_tests:
+    - expect_table_columns_to_match_ordered_list
+    - expect_column_to_exist
+
+# Resource limits
+resources:
+  max_memory_gb: 8
+  max_execution_time_minutes: 45
+  enable_memory_monitoring: true
+  
+  # Kill validation if it exceeds limits
+  enforce_limits: true
