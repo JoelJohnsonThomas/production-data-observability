@@ -1,0 +1,34 @@
+# Core Dependencies
+apache-airflow==2.8.1
+apache-airflow-providers-postgres==5.10.0
+
+# Data Validation
+great-expectations==0.16.8
+sqlalchemy==1.4.51
+pydantic==2.5.3
+
+# Database Connectors
+psycopg2-binary==2.9.9
+pymysql==1.1.0
+snowflake-connector-python==3.6.0
+google-cloud-bigquery==3.14.1
+
+# Configuration & Utilities
+pyyaml==6.0.1
+python-dotenv==1.0.0
+click==8.1.7
+
+# Alerting & Monitoring
+requests==2.31.0
+slack-sdk==3.26.2
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.3
+
+# Async & Task Management
+celery==5.3.4
+redis==5.0.1
+
+# Logging & Observability
+structlog==24.1.0
