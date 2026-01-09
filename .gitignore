@@ -49,6 +49,9 @@ standalone_admin_password.txt
 great_expectations/uncommitted/
 great_expectations/.ge_store_backend_id
 
+# plans
+implementation-plan.txt
+
 # Database
 *.db
 *.sqlite
